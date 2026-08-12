@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Laloves ❤️</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-pink: #ffe5ec;
+            --primary-pink: #ff4d6d;
+            --text-dark: #590d22;
+            --text-light: #a4133c;
+            --note-yellow: #fdfae1;
+            --note-blue: #e1f4fd;
+            --note-pink: #fde1ee;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100vh;
+            font-family: 'Fredoka', sans-serif; 
+            background-color: var(--bg-pink);
+            background-image: radial-gradient(#ffb3c6 1.8px, transparent 1.8px);
+            background-size: 30px 30px;
+            color: var(--text-dark); overflow: hidden;
+        }
+
+        .handwriting { font-family: 'Caveat', cursive; font-size: 32px; color: var(--primary-pink); margin: 0; }
+
+        /* --- FLOATING HEARTS (Non-interactive) --- */
+        #hearts-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 0;
+        }
+        .heart-particle {
+            position: absolute; color: rgba(255, 77, 109, 0.7); font-size: 32px;
+            animation: floatUp linear infinite; pointer-events: none;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-2deg);
+            background-color: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.3);
+            text-align: center; width: 90%; max-width: 400px; z-index: 100;
+        }
+        #login-screen input {
+            width: 80%; padding: 12px 20px; margin-bottom: 20px;
+            border: 2px dashed #ffb3c6; border-radius: 10px; outline: none; font-size: 16px; text-align: center; font-family: 'Fredoka', sans-serif;
+        }
+        button.primary-btn {
+            background-color: var(--primary-pink); color: white; border: none; padding: 12px 30px;
+            border-radius: 25px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        button.primary-btn:hover { transform: scale(1.05); background-color: var(--text-light); }
+
+        /* --- 3D PAGE FLIP ENGINE (BUG FIX APPLIED) --- */
+        #scene { display: none; perspective: 2000px; width: 100vw; height: 100vh; position: relative; z-index: 10; }
+        #book-wrapper {
+            width: 100%; height: 100vh; position: relative;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+        .is-flipped { transform: rotateY(-180deg); }
+
+        .book-face {
+            width: 100%; height: 100vh; position: absolute; top: 0; left: 0;
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+        }
+        
+        .face-content {
+            width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center;
+            -webkit-overflow-scrolling: touch;
+            transform: translateZ(0);
+        }
+        
+        #desk-view { transform: rotateY(0deg) translateZ(1px); }
+        #desk-view .face-content { justify-content: center; }
+        
+        #page-view { transform: rotateY(180deg) translateZ(1px); }
+        #page-view .face-content { padding: 40px 0; justify-content: flex-start; }
+
+        /* --- SCRAPBOOK GRID --- */
+        .dashboard-title { text-align: center; margin-bottom: 20px; }
+        .dashboard-title h1 { font-size: 55px; transform: rotate(-2deg); background: white; padding: 5px 20px; box-shadow: 2px 4px 10px rgba(0,0,0,0.1); display: inline-block; }
+
+        .scrapbook-grid {
+            display: grid; 
+            grid-template-columns: 140px 220px 140px; 
+            grid-template-rows: auto auto auto;
+            gap: 25px 40px; 
+            align-items: center; justify-items: center;
+            max-width: 900px; padding: 10px; margin: 0 auto;
+        }
+
+        .scrap-item { position: relative; cursor: pointer; transition: transform 0.3s; transform: translateZ(0); }
+        .scrap-item:hover { z-index: 50 !important; }
+        
+        .tape {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%) rotate(-3deg);
+            width: 70px; height: 22px; background: rgba(255,255,255,0.85);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15); z-index: 5;
+        }
+
+        .polaroid { background: white; padding: 15px 15px 40px 15px; box-shadow: 2px 6px 18px rgba(0,0,0,0.12); width: 100%; text-align: center; box-sizing: border-box; }
+        .polaroid .icon { font-size: 55px; margin-bottom: 10px; display: block; }
+        
+        .sticky-note { padding: 15px; box-shadow: 2px 6px 18px rgba(0,0,0,0.12); width: 100%; height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box; }
+        .sticky-note .icon { font-size: 45px; }
+
+        .torn-paper { background: white; padding: 20px 10px; width: 100%; text-align: center; box-shadow: 2px 6px 18px rgba(0,0,0,0.12); border-bottom: 5px dashed #ffb3c6; box-sizing: border-box; }
+        
+        /* Grid Placements */
+        .item-gallery { grid-column: 1; grid-row: 1; transform: rotate(-5deg); }
+        .item-letter  { grid-column: 2; grid-row: 1 / 3; transform: scale(1.1) rotate(1deg); z-index: 10; margin-top: 10px; } 
+        .item-map     { grid-column: 3; grid-row: 1; transform: rotate(4deg); }
+        .item-trivia  { grid-column: 1; grid-row: 2; transform: rotate(3deg); }
+        .item-play    { grid-column: 3; grid-row: 2; transform: rotate(-2deg); }
+        .item-gacha   { grid-column: 1; grid-row: 3; transform: rotate(4deg); }
+        .item-song    { grid-column: 2; grid-row: 3; transform: rotate(-2deg); margin-top: 15px; }
+        .item-coupons { grid-column: 3; grid-row: 3; transform: rotate(-4deg); }
+
+        .letter-item .icon { font-size: 90px; }
+
+        /* --- INNER PAGE CONTENT --- */
+        .notebook-page {
+            background: white; width: 90%; max-width: 750px; padding: 40px;
+            border-radius: 5px; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            background-image: repeating-linear-gradient(transparent, transparent 31px, #ffb3c6 31px, #ffb3c6 32px);
+            line-height: 32px; margin-bottom: 50px; position: relative;
+        }
+        .flip-back-btn {
+            background: none; border: none; font-size: 20px; font-family: 'Fredoka', sans-serif;
+            color: var(--primary-pink); cursor: pointer; font-weight: 600;
+            display: flex; align-items: center; margin-bottom: 25px; padding: 0; transition: transform 0.2s;
+        }
+        .flip-back-btn:hover { transform: translateX(-5px); }
+        
+        .page-content { display: none; }
+        .game-box { background: rgba(255, 255, 255, 0.9); padding: 25px; border-radius: 10px; border: 2px dashed #ffb3c6; margin-top: 20px; line-height: normal; text-align: center; }
+        .game-box button { background: var(--primary-pink); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: 'Fredoka'; margin: 5px; font-size: 18px; }
+        
+        /* --- TRAIN STATION MAP STYLES --- */
+        .train-line { position: relative; max-width: 500px; margin: 40px auto 20px auto; padding-left: 50px; }
+        .train-line::before { content: ''; position: absolute; left: 16px; top: 10px; bottom: -30px; width: 8px; background: var(--primary-pink); border-radius: 10px; box-shadow: inset 0 0 5px rgba(0,0,0,0.1); z-index: 1; }
+        .station { position: relative; margin-bottom: 45px; display: flex; align-items: center; }
+        .station-node { position: absolute; left: -50px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; background: white; border: 6px solid var(--primary-pink); border-radius: 50%; z-index: 2; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .station-content { background: #fff0f3; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); width: 100%; border-left: 5px solid var(--primary-pink); text-align: left; }
+        .station-content h3 { font-family: 'Fredoka', sans-serif; font-size: 20px; color: var(--text-dark); margin: 0 0 5px 0; display: flex; align-items: center; gap: 10px;}
+        .station-content p { font-family: 'Caveat', cursive; font-size: 26px; color: #555; margin: 0; line-height: 1.2; }
+        .future-track { position: relative; padding-left: 50px; margin-top: 40px; font-family: 'Caveat', cursive; font-size: 30px; color: var(--primary-pink); font-weight: bold; }
+        .future-node { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; background: white; border: 4px dashed var(--primary-pink); border-radius: 50%; z-index: 2; }
+
+        /* --- GALLERY STYLES --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; padding-top: 15px; }
+        .gallery-grid img { width: 100%; border-radius: 5px; aspect-ratio: 1/1; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 5px; background: white; transform: rotate(-2deg); }
+        .gallery-grid img:nth-child(even) { transform: rotate(2deg); }
+        /* --- POLAROID POP-UP MODAL --- */
+        #polaroid-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;
+        }
+        .polaroid-popup {
+            background: white; padding: 15px 15px 50px 15px; border-radius: 5px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); text-align: center;
+            max-width: 80%; max-height: 80%; transform: rotate(-2deg);
+            position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { 0% { transform: scale(0.5) rotate(-10deg); opacity: 0; } 100% { transform: scale(1) rotate(-2deg); opacity: 1; } }
+        .polaroid-popup img { max-width: 100%; max-height: 60vh; border-radius: 3px; }
+        .polaroid-popup .handwriting { position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 35px; color: #333; }
+        .close-btn { 
+            position: absolute; top: -15px; right: -15px; background: var(--primary-pink); 
+            color: white; border: none; border-radius: 50%; width: 40px; height: 40px; 
+            font-size: 20px; cursor: pointer; font-family: 'Fredoka'; box-shadow: 0 2px 5px rgba(0,0,0,0.3); 
+        }
+        .gallery-grid img { cursor: pointer; transition: transform 0.2s; }
+        .gallery-grid img:hover { transform: scale(1.1) rotate(0deg) !important; z-index: 2; position: relative; }
+    </style>
+</head>
+<body>
+
+    <div id="hearts-container"></div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="tape"></div>
+        <h2 class="handwriting" style="font-size: 45px; margin-bottom: 10px;">Hey cutie ❤️</h2>
+        <p>What's the magic word?</p>
+        <input type="password" id="magicWordInput" placeholder="password...">
+        <br>
+        <button class="primary-btn" onclick="checkPassword()">Enter</button>
+        <p id="error-msg" style="color: red; display: none; font-size: 14px; margin-top: 15px;">Oops, that's not it!</p>
+    </div>
+
+    <!-- 3D FLIP ENGINE -->
+    <div id="scene">
+        <div id="book-wrapper">
+            
+            <!-- DESK VIEW (FRONT) -->
+            <div id="desk-view" class="book-face">
+                <div class="face-content">
+                    <div class="dashboard-title">
+                        <h1 class="handwriting">Happy Monthsary!</h1>
+                    </div>
+
+                    <div class="scrapbook-grid">
+                        
+                        <div class="scrap-item polaroid item-gallery" onclick="openPage('page-gallery')">
+                            <div class="tape" style="transform: translateX(-50%) rotate(4deg);"></div>
+                            <span class="icon">📸</span>
+                            <span class="handwriting" style="font-size: 26px; color: #333;">Us</span>
+                        </div>
+
+                        <!-- GIANT LETTER CENTERED -->
+                        <div class="scrap-item polaroid letter-item item-letter" onclick="openPage('page-letter')">
+                            <div class="tape"></div>
+                            <span class="icon">💌</span>
+                            <span class="handwriting" style="font-size: 40px;">Read Me</span>
+                        </div>
+
+                        <!-- MAP / JOURNEY -->
+                        <div class="scrap-item torn-paper item-map" onclick="openPage('page-map')">
+                            <div class="tape"></div>
+                            <span class="icon" style="font-size: 45px;">🗺️</span><br>
+                            <span class="handwriting" style="font-size: 26px; color: #333;">Journey</span>
+                        </div>
+
+                        <div class="scrap-item sticky-note item-trivia" onclick="openPage('page-quiz')" style="background-color: var(--note-blue);">
+                            <div class="tape" style="transform: translateX(-50%) rotate(5deg);"></div>
+                            <span class="icon">🧠</span>
+                            <span class="handwriting" style="font-size: 26px; color: #333;">Trivia</span>
+                        </div>
+
+                        <div class="scrap-item polaroid item-play" onclick="openPage('page-blackjack')">
+                            <div class="tape"></div>
+                            <span class="icon">♠️</span>
+                            <span class="handwriting" style="font-size: 26px; color: #333;">Play</span>
+                        </div>
+
+                        <div class="scrap-item sticky-note item-gacha" onclick="openPage('page-gacha')" style="background-color: var(--note-yellow);">
+                            <div class="tape"></div>
+                            <span class="icon">🎲</span>
+                            <span class="handwriting" style="font-size: 26px; color: #333;">Gacha</span>
+                        </div>
+
+                        <div class="scrap-item sticky-note item-song" onclick="openPage('page-song')" style="background-color: var(--note-pink);">
+                            <div class="tape"></div>
+                            <span class="icon">🎵</span>
+                            <span class="handwriting" style="font-size: 26px; color: #333;">Song</span>
+                        </div>
+
+                        <div class="scrap-item torn-paper item-coupons" onclick="openPage('page-coupons')">
+                            <div class="tape" style="transform: translateX(-50%) rotate(-4deg);"></div>
+                            <span class="icon" style="font-size: 40px;">🎟️</span><br>
+                            <span class="handwriting" style="font-size: 26px; color: #333;">Coupons</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE VIEW (BACK) -->
+            <div id="page-view" class="book-face">
+                <div class="face-content">
+                    <div class="notebook-page">
+                        <button class="flip-back-btn" onclick="closePage()"><span>⤺</span> Back to Desk</button>
+
+                        <!-- 1. Letter Content -->
+                        <div id="page-letter" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">For My Laloves</h2>
+                            <div style="font-family: 'Caveat', cursive; font-size: 30px; line-height: 1.4; color: #333; margin-top: 10px;">
+                                Dear Laloves,<br><br>
+                                Happy Monthsary! ❤️<br><br>
+                                I wanted to do something a little different this time, soooo I made this just for my Krizia. <br><br>
+                                WOWWWWWW 3 months with youu!! time so fastttt... Anyways i just want to tell you how incredibly happy and grateful I am to have you in my life. Every single day with you is my favorite, whether we are going out on dates, playing games together, watching something or just talking. I realize how lucky I am to have you by my side and understanding me if I do dumb things. You make absolutely everything better just by being you.
+                                If only words can describe how much happiness you bring to me but i cant. Im glad i met you and we continued talking cause i did not expect to be in a relationship, but im so so so so glad that it's you<br><br>
+                                Thank you for being with me and an amazing part of my life, and I will try to be the best partner for you. I hope you liked this little thing I did (2 days of coding helppp) anyways...<br><br>
+                                I love you so so so much my lalovesss.<br><br>
+                                Love,<br>
+                                Yuie ❤️
+                            </div>
+                        </div>
+
+                        <!-- 2. Gallery Content -->
+                        <div id="page-gallery" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">Our Memories 📸</h2>
+                            <div class="gallery-grid">
+                                <img src="images/moa1.jpg" alt="Pic 1" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="images/moa2.jpg" alt="Pic 2" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="images/festi1.jpg" alt="Pic 3" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="images/festi2.jpg" alt="Pic 5" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="images/festi3.jpg" alt="Pic 6" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="images/moa3.jpg" alt="Pic 7" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="images/moa4.jpg" alt="Pic 8" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="images/moa5.jpg" alt="Pic 9" onclick="openPolaroid(this.src, 'My Laloves ❤️')">
+                                <img src="https://placehold.co/400x400/000000/ffffff?text=Soon..." alt="Soon..." onclick="openPolaroid(this.src, 'More memories coming soon! ❤️')">
+
+                            </div>
+                        </div>
+
+                        <!-- 3. Train Station Map Content -->
+                        <div id="page-map" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">Our Journey 🚇</h2>
+                            <div class="train-line">
+                                <div class="station"><div class="station-node"></div><div class="station-content"><h3>💻 Online Meetup St.</h3><p>Where it all started.</p></div></div>
+                                <div class="station"><div class="station-node"></div><div class="station-content"><h3>🎡 MOA St.</h3><p>The first time we met in person!</p></div></div>
+                                <div class="station"><div class="station-node"></div><div class="station-content"><h3>🛍️ Festival Mall St.</h3><p>The day we officially got together.</p></div></div>
+                                <div class="station"><div class="station-node"></div><div class="station-content"><h3>🏡 My House St.</h3><p>You met my parents!</p></div></div>
+                                <div class="station"><div class="station-node"></div><div class="station-content"><h3>🏠 Your House St.</h3><p>Visiting your place.</p></div></div>
+                                <div class="station"><div class="station-node"></div><div class="station-content"><h3>🌙 Sleepover St.</h3><p>Our first sleepover at my house.</p></div></div>
+                                <div class="station" style="margin-bottom: 20px;"><div class="station-node"></div><div class="station-content"><h3>🎡 MOA (Again) St.</h3><p>Our latest date.</p></div></div>
+                                <div class="future-track"><div class="future-node"></div>...Next Stop: Coming soon!! ❤️</div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Quiz Content (NEW) -->
+                        <div id="page-quiz" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">Relationship Trivia 🧠</h2>
+                            <div class="game-box" id="quiz-container">
+                                <h3 id="question-text" style="margin-top: 0; font-size: 22px; color: var(--text-dark);">Loading question...</h3>
+                                <div id="answer-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+                                    <!-- Buttons will be generated by JS -->
+                                </div>
+                                <p id="quiz-result" class="handwriting" style="font-size: 32px; margin-top: 20px; height: 35px;"></p>
+                                <!-- The button below will show up dynamically via JS -->
+                                <button id="next-btn" onclick="nextQuestion()" style="display: none; margin: 15px auto 0 auto; background-color: var(--text-dark);"></button>
+                            </div>
+                        </div>
+
+                        <!-- 5. Gacha Content -->
+                        <div id="page-gacha" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">Date Night Gacha 🎲</h2>
+                            <div class="game-box">
+                                <p style="font-size: 18px; margin-top: 0;">Roll for a random date prize!(not final im in rush T_T)</p>
+                                <button onclick="rollGacha()" style="padding: 12px 30px; font-size: 18px;">PULL 1x</button>
+                                <h3 id="gacha-output" style="color: var(--primary-pink); margin-top: 25px; min-height: 30px;">...</h3>
+                            </div>
+                        </div>
+
+                        <!-- 6. Blackjack Content -->
+                        <div id="page-blackjack" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">Blackjack ♠️</h2>
+                            <div class="game-box">
+                                <p style="margin-top: 0;">Are you better at blackjack🤨</p>
+                                <div style="display: flex; justify-content: space-around; font-size: 24px; margin: 15px 0;">
+                                    <div>Dealer: <strong id="dealer-score">0</strong></div>
+                                    <div>You: <strong id="player-score">0</strong></div>
+                                </div>
+                                <h3 id="bj-message" class="handwriting" style="font-size: 36px; color: #333;">Click Start to Play</h3>
+                                <button onclick="startBJ()">Start Game</button>
+                                <button id="hit-btn" onclick="hitBJ()" disabled>Hit</button>
+                                <button id="stand-btn" onclick="standBJ()" disabled>Stand</button>
+                            </div>
+                        </div>
+
+                        <!-- 7. Coupons Content -->
+                        <div id="page-coupons" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">Love Coupons 🎟️</h2>
+                            <p style="text-align: center; margin-top: -10px;">Redeemable anytime!</p>
+                            <div style="line-height: 1.4; font-size: 18px;">
+                                <p>🎫 <strong>Movie Picker</strong> - You get 100% control over what we watch tonight.</p>
+                                <p>🎫 <strong>Rage-Free Gaming</strong> - No malding the whole game session.</p>
+                                <p>🎫 <strong>No Ragebait for 8 Hours</strong> - 8 straight hours of absolutely zero ragebaiting from me.</p>
+                                <p>🎫 <strong>Dinner Choice</strong> - You pick the food place, I will eat without complaining.</p>
+                                <p>🎫 <strong>Skip an Argument</strong> - I automatically say "You're right, my Laloves, I'm sorry."</p>
+                                <p>🎫 <strong>Go Anywhere</strong> - We go anywhere you want (as long as it's on our free time).</p>
+                                <p>🎫 <strong>Unli Mwa Mwa</strong> - Redeemable for unlimited kisses whenever you want!</p>
+                                <p>🎫 <strong>Drop Everything</strong> - No matter what I'm doing (even if I'm coding!), I will drop it and give you 100% of my attention immediately.</p>
+                            </div>
+                        </div>
+
+                       <!-- 8. Song Content -->
+                        <div id="page-song" class="page-content">
+                            <h2 class="handwriting" style="font-size: 45px;">Songs That Remind Me of Us 🎵</h2>
+                            <!-- FIX: Changed margin-top to 0px to prevent the text overlap! -->
+                            <p style="text-align: center; margin-top: 0px; font-size: 16px; color: #666;">A little playlist for you (im in a rush... i just add what comes in my mind at the time codingT_T) ❤️</p>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
+                                
+                                <!-- Song 1: Sa Bawat Sandali -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"Sa Bawat Sandali" - Amiel Sol</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/06IkOr83qPqa3yYvrIjgxp?si=d715fd7512d54d2b" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                                <!-- Song 2: Enchanted -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"Enchanted" - Taylor Swift</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/04S1pkp1VaIqjg8zZqknR5?si=b3bd3fb193e1484e" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                                <!-- Song 3: Nahanap Kita -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"Nahanap Kita" - Amiel Sol</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0GD9U8EM8xcPvuaA50Wzpe?si=d382f9e689c74a40" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                                <!-- Song 4: Blue -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"blue" - yung kai</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3be9ACTxtcL6Zm4vJRUiPG?si=84929e1bfbdb4abe" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                                <!-- Song 5: I Fall -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"I Fall" - Victor Lundberg</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/33Ldx8GCzHlCsYT9EfrkaB?si=eadbaac2f6a34c3e" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                                <!-- Song 6: How Would You Feel -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"How Would You Feel" - Ed Sheeran</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6PJ8FF6UR8FZXfEvpHkIVN?si=f11cd8769a634f80" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+                                <!-- Song 7: You & I -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"You & I" - One Direction</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2afCBiru10AFckfOa49wIa?si=d56af579c9a444a7" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+                                <!-- Song 8: Two Is Better Than One (ft. Taylor Swift) -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"Two Is Better Than One (ft. Taylor Swift)" - BOYS LIKE GIRLS</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/1MaqkdFNIKPdpQGDzme5ss?si=5e0f45e7054041ca" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+                                <!-- Song 9: Crazier -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"Crazier" - Taylor Swift</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5vyxXfD5gLlyPxGZMEjtmd?si=1740d7cd94874686" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+                                <!-- Song 10: The Only Exception -->
+                                <div class="game-box" style="padding: 15px; margin: 0; text-align: left; background: white;">
+                                    <p class="handwriting" style="font-size: 28px; color: var(--primary-pink); margin: 0 0 8px 0;">"The Only Exception" - Paramore</p>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7JIuqL4ZqkpfGKQhYlrirs?si=2083483e9ec24557" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                            </div>
+                        </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                        <!-- HIDDEN POLAROID MODAL -->
+                        <div id="polaroid-modal" onclick="closePolaroid(event)">
+                            <div class="polaroid-popup">
+                                <button class="close-btn" onclick="closePolaroid(event, true)">✖</button>
+                                <img id="polaroid-img" src="" alt="Enlarged Pic">
+                                <div class="handwriting" id="polaroid-caption">Caption</div>
+                            </div>
+                        </div>
+
+    <script>
+        // --- BACKGROUND HEARTS ---
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-particle');
+            heart.innerText = '❤️';
+            heart.style.left = Math.random() * 95 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+            document.getElementById('hearts-container').appendChild(heart);
+            setTimeout(() => { if(heart.parentElement) heart.remove(); }, 7000);
+        }
+        setInterval(createHeart, 600);
+
+        // --- NAVIGATION ---
+        function checkPassword() {
+            if (document.getElementById('magicWordInput').value.toLowerCase().trim() === "laloves") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('scene').style.display = 'block';
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+        document.getElementById("magicWordInput").addEventListener("keypress", e => { if (e.key === "Enter") checkPassword(); });
+
+        function openPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(page => page.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+            document.getElementById('book-wrapper').classList.add('is-flipped');
+            document.querySelector('#page-view .face-content').scrollTop = 0;
+            
+            // Starts a fresh random quiz every time she opens the Trivia tab
+            if(pageId === 'page-quiz') {
+                initQuiz();
+            }
+        }
+        function closePage() { document.getElementById('book-wrapper').classList.remove('is-flipped'); }
+
+        //QUIZ (RANDOMIZED) 
+        const allTriviaQuestions = [
+            { question: "Where did we first meet and start talking?", answers: ["At school", "Online", "At a mall"], correct: 1 },
+            { question: "Where was our very first in-person meetup?", answers: ["Festival Mall", "MOA", "Your house"], correct: 1 },
+            { question: "Where were we when we officially became a couple?", answers: ["Online call", "MOA", "Festival Mall"], correct: 2 },
+            { question: "When is our anniversary?", answers: ["May 12", "May 13", "May 14"], correct: 1 },
+            { question: "Who is better at ragebaiting?", answers: ["Me (Yuie)", "You (Krizia)", "We're both innocent angels"], correct: 0 },
+            { question: "Who usually decides where we eat?", answers: ["Me", "You", "We just say 'I don't know' for an hour"], correct: 2 },
+            { question: "Which game have we spent the most hours playing together?", answers: ["Valorant", "Minecraft", "Roblox"], correct: 0 },
+            { question: "Who gets tilted/mad faster when we are losing a game?", answers: ["Me", "You", "We both rage equally"], correct: 2 },
+            { question: "Who is more likely to stay up late gaming or talking on the phone?", answers: ["Me", "You", "Both of us equally"], correct: 2 },
+            { question: "Who is the pickier eater between the two of us?", answers: ["Me (Yuie)", "You (Krizia)", "We both eat literally anything"], correct: 0 },
+            { question: "Who is likely to fall asleep first?", answers: ["Me", "You", "We fall asleep at the exact same time"], correct: 0 },
+            { question: "Who takes longer to get ready before we go out on a date?", answers: ["Me", "You", "We take the exact same time"], correct: 1 },
+            { question: "Who takes the most pictures when we go out?", answers: ["Me", "You", "We forget because we're having too much fun"], correct: 2 },
+            { question: "What was my first impression of you when we first met?", answers: ["'She's intimidating'", "'She's so cute'", "'She's so loud/chaotic'"], correct: 1 },
+            { question: "What is my favorite part of any date we go on?", answers: ["The delicious food", "Just being with you", "Going home after"], correct: 1 },
+            { question: "Who says 'I love you' first in the morning?", answers: ["Me", "You", "Whoever wakes up first!"], correct: 2 },
+            { question: "What is my absolute favorite callsign for you?", answers: ["Cutie", "Laloves", "Princess"], correct: 1 },
+            { question: "Who gives the best hugs?", answers: ["Me", "You", "It's a tie"], correct: 2 },
+            { question: "What is our go-to lazy day activity?", answers: ["Watching movies/shows", "Playing games", "Literally whatever comes to mind first"], correct: 2 },
+            { question: "How much do I love you?", answers: ["I love you so so much!", "I love you so so so much!!", "I love you so so so sooo much!!!", "All of the above!"], correct: 3 }
+        ];
+
+        let triviaQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function initQuiz() {
+            let shuffled = [...allTriviaQuestions].sort(() => 0.5 - Math.random());
+            triviaQuestions = shuffled.slice(0, 5); 
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = triviaQuestions[currentQuestionIndex];
+            document.getElementById('question-text').innerText = `Q${currentQuestionIndex + 1}: ` + q.question;
+            document.getElementById('quiz-result').innerText = "";
+            
+            let nextBtn = document.getElementById('next-btn');
+            nextBtn.style.display = "none";
+            nextBtn.innerText = "Next Question ➔";
+            
+            const activeContainer = document.getElementById('answer-buttons');
+            activeContainer.innerHTML = ""; 
+            
+            q.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.innerText = answer;
+                btn.onclick = () => selectAnswer(index);
+                activeContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedIndex) {
+            const q = triviaQuestions[currentQuestionIndex];
+            const res = document.getElementById('quiz-result');
+            const btns = document.getElementById('answer-buttons').querySelectorAll('button');
+            
+            btns.forEach(b => b.disabled = true);
+
+            if(selectedIndex === q.correct) {
+                res.style.color = "green";
+                res.innerText = "Correct! ❤️";
+                score++;
+            } else {
+                res.style.color = "red";
+                res.innerText = "Wrong! 😤";
+            }
+
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.style.display = "block";
+            if (currentQuestionIndex >= triviaQuestions.length - 1) {
+                nextBtn.innerText = "See Score ➔";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < triviaQuestions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById('question-text').innerText = `You scored ${score} out of ${triviaQuestions.length}!`;
+                document.getElementById('answer-buttons').innerHTML = "";
+                document.getElementById('next-btn').style.display = "none";
+                
+                if (score === triviaQuestions.length) {
+                    document.getElementById('quiz-result').style.color = "var(--primary-pink)";
+                    document.getElementById('quiz-result').innerText = "Perfect score! wowiwowow! 🏆";
+                } else {
+                    document.getElementById('quiz-result').style.color = "var(--text-dark)";
+                    document.getElementById('quiz-result').innerText = "Not bad! Here is a virtual mwa mwa 😘";
+                }
+                
+                const retryBtn = document.createElement('button');
+                retryBtn.innerText = "Play Again 🔄";
+                retryBtn.style.marginTop = "15px";
+                retryBtn.onclick = () => {
+                    retryBtn.remove();
+                    initQuiz();
+                };
+                document.getElementById('answer-buttons').appendChild(retryBtn);
+            }
+        }
+
+        // --- GACHA LOGIC ---
+        const pool = [
+            "⭐ Common: Iced coffee treat on me ☕",
+            "⭐ Common: I will do one small favor for you, no questions asked 🧞‍♂️",
+            "⭐ Common: I carry your bag for the whole day on our next date 🎒",
+            "⭐ Common: Endless hugs and cuddles 🤗",
+            "⭐ Common: Free mcdo",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+            "⭐ Common: reroll",
+
+            
+            "⭐⭐ Rare: I pay for our next dinner date 🍽️✨",
+            "⭐⭐ Rare: A whole day where I just say 'yes' to whatever you want to do 🗓️",
+            "⭐⭐ Rare: I will commute to your place instead! 🚌🏡",
+            "⭐⭐ Rare: I make a custom Spotify playlist just for you 🎶",
+            
+            "⭐⭐⭐ Epic: You get to post something on my social media (your choice!) 📱",
+            "⭐⭐⭐ Epic: I take you home safely after our next date 🚗🏡",
+            "⭐⭐⭐ Epic: We go to the cinema to watch a movie of your choice! 🎟️🎬",
+            
+            "⭐⭐⭐⭐⭐ LEGENDARY: FREE VALO SKIN OF YOUR CHOICE! 🔫✨"
+        ];
+        function rollGacha() {
+            document.getElementById('gacha-output').innerText = "Rolling...";
+            setTimeout(() => { document.getElementById('gacha-output').innerText = pool[Math.floor(Math.random() * pool.length)]; }, 500);
+        }
+
+        // --- BLACKJACK LOGIC ---
+        let pScore=0, dScore=0, playing=false;
+        const deck = [2,3,4,5,6,7,8,9,10,10,10,10,11]; 
+        function draw() { return deck[Math.floor(Math.random()*deck.length)]; }
+        function startBJ() {
+            pScore = draw() + draw(); dScore = draw();
+            document.getElementById('player-score').innerText = pScore;
+            document.getElementById('dealer-score').innerText = dScore;
+            document.getElementById('bj-message').style.color = "#333";
+            document.getElementById('bj-message').innerText = "Hit or Stand?";
+            document.getElementById('hit-btn').disabled = false;
+            document.getElementById('stand-btn').disabled = false;
+            playing = true;
+        }
+        function hitBJ() {
+            if(!playing) return;
+            pScore += draw();
+            document.getElementById('player-score').innerText = pScore;
+            if(pScore > 21) { 
+                document.getElementById('bj-message').style.color = "var(--primary-pink)";
+                document.getElementById('bj-message').innerText = "Bust! I win! 😋"; 
+                playing=false; disableBtns(); 
+            }
+        }
+        function standBJ() {
+            if(!playing) return;
+            while(dScore < 17) dScore += draw();
+            document.getElementById('dealer-score').innerText = dScore;
+            document.getElementById('bj-message').style.color = "var(--primary-pink)";
+            if(dScore > 21) document.getElementById('bj-message').innerText = "Dealer Busts! You win! 🎉";
+            else if(dScore > pScore) document.getElementById('bj-message').innerText = "I win! 😏";
+            else if(pScore > dScore) document.getElementById('bj-message').innerText = "You win! 🎁";
+            else document.getElementById('bj-message').innerText = "Tie! 🤝";
+            playing = false; disableBtns();
+        }
+        function disableBtns() { document.getElementById('hit-btn').disabled = true; document.getElementById('stand-btn').disabled = true; }
+        
+        // --- POLAROID MODAL LOGIC ---
+        function openPolaroid(src, caption) {
+            document.getElementById('polaroid-img').src = src;
+            document.getElementById('polaroid-caption').innerText = caption;
+            document.getElementById('polaroid-modal').style.display = 'flex';
+        }
+        function closePolaroid(e, force = false) {
+            // Closes if she clicks the X button OR anywhere in the dark background
+            if (force || e.target.id === 'polaroid-modal') {
+                document.getElementById('polaroid-modal').style.display = 'none';
+            }
+        }
+        
+        
+    </script>
+</body>
+</html>
