@@ -186,26 +186,38 @@
         .gallery-grid img { cursor: pointer; transition: transform 0.2s; }
         .gallery-grid img:hover { transform: scale(1.1) rotate(0deg) !important; z-index: 2; position: relative; }
 
-        /* --- MOBILE RESPONSIVE FIX --- */
-        @media (max-width: 600px) {
-            .dashboard-title h1 { font-size: 36px !important; }
+        /* --- UPGRADED MOBILE RESPONSIVE FIX --- */
+        @media (max-width: 800px) {
+            .dashboard-title h1 { font-size: 32px !important; margin-top: 15px !important; }
             .scrapbook-grid {
                 grid-template-columns: 1fr 1fr !important;
-                grid-template-rows: auto !important;
-                gap: 15px !important;
-                padding: 5px !important;
+                gap: 15px 10px !important;
+                padding: 10px 5px 40px 5px !important;
+                max-width: 100% !important;
             }
-            .item-gallery { grid-column: 1 !important; grid-row: 1 !important; }
-            .item-map     { grid-column: 2 !important; grid-row: 1 !important; }
-            .item-letter  { grid-column: 1 / span 2 !important; grid-row: 2 !important; margin-top: 0 !important; }
-            .item-trivia  { grid-column: 1 !important; grid-row: 3 !important; }
-            .item-play    { grid-column: 2 !important; grid-row: 3 !important; }
-            .item-gacha   { grid-column: 1 !important; grid-row: 4 !important; }
-            .item-coupons { grid-column: 2 !important; grid-row: 4 !important; }
-            .item-song    { grid-column: 1 / span 2 !important; grid-row: 5 !important; margin-top: 0 !important; }
+            /* Rearrange the grid to 2 columns */
+            .item-gallery { grid-column: 1 !important; grid-row: 1 !important; transform: rotate(-3deg) !important; }
+            .item-map     { grid-column: 2 !important; grid-row: 1 !important; transform: rotate(4deg) !important; }
+            
+            .item-letter  { grid-column: 1 / span 2 !important; grid-row: 2 !important; margin: 10px auto !important; width: 65% !important; transform: rotate(1deg) !important; }
+            
+            .item-trivia  { grid-column: 1 !important; grid-row: 3 !important; transform: rotate(3deg) !important; }
+            .item-play    { grid-column: 2 !important; grid-row: 3 !important; transform: rotate(-2deg) !important; }
+            
+            .item-gacha   { grid-column: 1 !important; grid-row: 4 !important; transform: rotate(4deg) !important;}
+            .item-coupons { grid-column: 2 !important; grid-row: 4 !important; transform: rotate(-4deg) !important;}
+            
+            .item-song    { grid-column: 1 / span 2 !important; grid-row: 5 !important; margin: 5px auto !important; width: 65% !important; transform: rotate(-2deg) !important;}
+            
+            /* Shrink the items slightly so they don't crash on small phone screens */
+            .scrap-item .icon { font-size: 35px !important; margin-bottom: 5px !important;}
+            .letter-item .icon { font-size: 60px !important; }
+            .scrap-item .handwriting { font-size: 20px !important; }
+            .polaroid { padding: 10px 10px 25px 10px !important; }
+            .sticky-note { height: 100px !important; padding: 10px !important; }
+            .torn-paper { padding: 10px !important; }
             
             .notebook-page { padding: 25px 15px !important; width: 92% !important; }
-            .handwriting { font-size: 28px !important; }
         }
     </style>
 </head>
@@ -485,7 +497,8 @@
                         </div>
 
     <script>
-        // --- BACKGROUND HEARTS ---
+
+// --- BACKGROUND HEARTS ---
         function createHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart-particle');
@@ -539,7 +552,7 @@
             }
         });
 
-        //QUIZ (RANDOMIZED) 
+        //QUIZ (RANDOMIZED)
         const allTriviaQuestions = [
             { question: "Where did we first meet and start talking?", answers: ["At school", "Online", "At a mall"], correct: 1 },
             { question: "Where was our very first in-person meetup?", answers: ["Festival Mall", "MOA", "Your house"], correct: 1 },
@@ -743,3 +756,4 @@
     </script>
 </body>
 </html>
+//test
