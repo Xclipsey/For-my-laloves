@@ -185,6 +185,28 @@
         }
         .gallery-grid img { cursor: pointer; transition: transform 0.2s; }
         .gallery-grid img:hover { transform: scale(1.1) rotate(0deg) !important; z-index: 2; position: relative; }
+
+        /* --- MOBILE RESPONSIVE FIX --- */
+        @media (max-width: 600px) {
+            .dashboard-title h1 { font-size: 36px !important; }
+            .scrapbook-grid {
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-rows: auto !important;
+                gap: 15px !important;
+                padding: 5px !important;
+            }
+            .item-gallery { grid-column: 1 !important; grid-row: 1 !important; }
+            .item-map     { grid-column: 2 !important; grid-row: 1 !important; }
+            .item-letter  { grid-column: 1 / span 2 !important; grid-row: 2 !important; margin-top: 0 !important; }
+            .item-trivia  { grid-column: 1 !important; grid-row: 3 !important; }
+            .item-play    { grid-column: 2 !important; grid-row: 3 !important; }
+            .item-gacha   { grid-column: 1 !important; grid-row: 4 !important; }
+            .item-coupons { grid-column: 2 !important; grid-row: 4 !important; }
+            .item-song    { grid-column: 1 / span 2 !important; grid-row: 5 !important; margin-top: 0 !important; }
+            
+            .notebook-page { padding: 25px 15px !important; width: 92% !important; }
+            .handwriting { font-size: 28px !important; }
+        }
     </style>
 </head>
 <body>
@@ -475,7 +497,7 @@
         }
         setInterval(createHeart, 600);
 
-        // --- NAVIGATION ---
+        // --- NAVIGATION (WITH PHONE BACK BUTTON / SWIPE FIX) ---
         function checkPassword() {
             if (document.getElementById('magicWordInput').value.toLowerCase().trim() === "laloves") {
                 document.getElementById('login-screen').style.display = 'none';
@@ -496,8 +518,26 @@
             if(pageId === 'page-quiz') {
                 initQuiz();
             }
+
+            // Pushes a new entry to browser history so phone 'Back' works
+            history.pushState({ pageOpen: true }, '');
         }
-        function closePage() { document.getElementById('book-wrapper').classList.remove('is-flipped'); }
+
+        function closePage(fromHistory = false) { 
+            document.getElementById('book-wrapper').classList.remove('is-flipped'); 
+            
+            // Syncs history if she clicks the "Back to Desk" button on screen
+            if (!fromHistory && history.state && history.state.pageOpen) {
+                history.back();
+            }
+        }
+
+        // Listens for Android Back Button & iOS Swipe-Back Gesture
+        window.addEventListener('popstate', function() {
+            if (document.getElementById('book-wrapper').classList.contains('is-flipped')) {
+                closePage(true);
+            }
+        });
 
         //QUIZ (RANDOMIZED) 
         const allTriviaQuestions = [
